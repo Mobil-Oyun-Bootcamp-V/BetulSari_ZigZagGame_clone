@@ -1,13 +1,18 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using TMPro;
+using UnityEditor.SceneManagement;
 using UnityEngine;
-using UnityEngine.UI;
 
 public class BallController : MonoBehaviour
 {
+    private GroundCreator _groundCreator;
+    public GameObject Ground;
+    public GameObject finishPanel;
+    public ParticleSystem effectPrefab;
     public float moveSpeed=2;
     int score, hscore;
-    public Text scoreText, hScoreText;
+    public TextMeshProUGUI scoreText, hScoreText;
     bool turnedRight=true;
     public Transform rayOrigin;
     
@@ -20,8 +25,8 @@ public class BallController : MonoBehaviour
     
     void Start()
     {
-        //hscore= PlayerPrefs.GetInt("myhscore");
-        //hScoreText.text = hscore.ToString();
+        hscore= PlayerPrefs.GetInt("myhscore");
+        hScoreText.text = hscore.ToString();
     }
 
     // Update is called once per frame
@@ -30,7 +35,7 @@ public class BallController : MonoBehaviour
         if (gameManager.gameStarted)
         {
             transform.Translate(Vector3.forward * moveSpeed * Time.deltaTime);
-            
+
             TurnUsingKeyboard();
             CheckFalling();
         }
@@ -44,15 +49,15 @@ public class BallController : MonoBehaviour
         if(other.tag.Equals("crystal"))
         {
             effectPos=other.transform.position;
-            //MakeScore();
+            MakeScore();
             other.gameObject.SetActive(false);
-            //MakeEffect();
+            MakeEffect();
         }
     }
     
     private void OnCollisionEnter(Collision collision)
     {
-        Destroy(collision.gameObject, 6f);
+        Destroy(collision.gameObject, 3f);
     }
     
     private void TurnUsingKeyboard()
@@ -62,6 +67,26 @@ public class BallController : MonoBehaviour
         {
             Turn();
         }
+    }
+    
+    private void MakeEffect()
+    {
+        var effect = Instantiate(effectPrefab,effectPos, Quaternion.identity);
+        Destroy(effect.gameObject, 1f);
+    }
+    
+    private void MakeScore()
+    {
+        score++;
+        scoreText.text=score.ToString();
+        if(score > hscore)
+        {
+            hscore=score;
+            hScoreText.text=hscore.ToString();
+            PlayerPrefs.SetInt("myhscore", hscore);
+        }
+        
+        
     }
     
     private void Turn()
@@ -84,7 +109,7 @@ public class BallController : MonoBehaviour
     {
         if(!Physics.Raycast(rayOrigin.position,Vector3.down))
         {
-            gameManager.RestartGame();
+            finishPanel.SetActive(true);
         }
     }
 }

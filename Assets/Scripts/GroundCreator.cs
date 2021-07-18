@@ -4,6 +4,7 @@ using UnityEngine;
 
 public class GroundCreator : MonoBehaviour
 {
+    
     Transform ball;
     public GameObject blockPrefab;
     public Transform lastBlock;
@@ -19,17 +20,11 @@ public class GroundCreator : MonoBehaviour
         lastBlockPos=lastBlock.position;
         InvokeRepeating("CreateGround", 0f, 1f/5);
     }
-
-    // Update is called once per frame
-    void Update()
-    {
-        //CreateGround();
-    }
     
     private void CreateGround()
     {
         float distance = Vector3.Distance(ball.position, lastBlockPos);
-        if(distance > cam.orthographicSize*2)   // perspektif yerine orthografik kamera kullanırız
+        if(distance > cam.orthographicSize*2)   // perspektif yerine ortografik kamera kullanıldı
         {
             return;
         }
@@ -38,10 +33,12 @@ public class GroundCreator : MonoBehaviour
         int chance = Random.Range(1,11);
         if(chance>5)
         {
+            //sola doğru oluşan yeni bloklar x için -0.707, z için -0.707 
             newBlock.transform.position= new Vector3(lastBlockPos.x - offset, lastBlockPos.y ,lastBlockPos.z - offset);
         }
         else
         {
+            //ileri doğru gelen yeni bloklar x için -0.707, z için +0.707 
             newBlock.transform.position= new Vector3(lastBlockPos.x - offset, lastBlockPos.y ,lastBlockPos.z + offset);
         
         }
@@ -49,5 +46,6 @@ public class GroundCreator : MonoBehaviour
         newBlock.transform.GetChild(0).gameObject.SetActive(randomEnabler);
         newBlock.transform.rotation=Quaternion.Euler(0,45,0);
         lastBlockPos=newBlock.transform.position;
+        
     }
 }
